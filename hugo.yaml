@@ -3,6 +3,10 @@ locale: sv-se
 title: NorrasOFF
 theme: ["PaperMod"]
 
+caches:
+  images:
+    dir: :cacheDir/images
+
 params:
   profileMode:
     enabled: true
