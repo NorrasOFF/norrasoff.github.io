@@ -1,0 +1,29 @@
+baseURL: https://norrasoff.github.io/
+locale: sv-se
+title: NorrasOFF
+theme: ["PaperMod"]
+
+params:
+  profileMode:
+    enabled: true
+    title: Norra Reals OpenFront-förening
+    subtitle: "Vi är ett en grupp personer på Norra Real som gillar att spela stategispelet OpenFront. Vi underhåller även en egen version av spelet som innehåller extra modifikationer och funktioner. Här visas länkar till föreningens olika sidor samt kan du hitta verksamhetsdokument här."
+    imageUrl: "https://avatars.githubusercontent.com/u/329233216"
+    buttons:
+      - name: Ansökan
+        url: https://docs.google.com/forms/d/e/1FAIpQLSd3qK-7uPH4xH4pIgHwzygtOSS7MwIyn695y94v72e0r0OHOA/viewform
+      - name: Arkiv
+        url: /archive/
+
+  socialIcons:
+    - name: instagram
+      url: "https://www.instagram.com/openfront_norrareal/"
+    - name: github
+      url: "https://github.com/NorrasOFF"
+
+menu:
+  main:
+    - identifier: archive
+      name: Arkiv
+      url: /archive/
+      weight: 10
