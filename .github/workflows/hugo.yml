@@ -4,9 +4,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-  schedule:
-    # Refresh the ranked leaderboard snapshot every 15 minutes.
-    - cron: "*/15 * * * *"
 permissions:
   contents: read
   pages: write

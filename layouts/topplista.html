@@ -11,33 +11,127 @@
   <div class="post-content md-content">
     {{ .Content }}
 
-    {{- $entries := hugo.Data.leaderboard }}
-    {{- if $entries }}
-    <table class="topplista-table">
-      <thead>
-        <tr>
-          <th scope="col">Placering</th>
-          <th scope="col">Spelare</th>
-          <th scope="col">ELO</th>
-          <th scope="col">Matcher</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{- range $entries }}
-        <tr{{ if le (int .rank) 3 }} class="topplista-top"{{ end }}>
-          <td>{{ .rank }}</td>
-          <td>{{ .accountUsername }}</td>
-          <td>{{ .elo }}</td>
-          <td>{{ .total }}</td>
-        </tr>
-        {{- end }}
-      </tbody>
-    </table>
-    <p class="topplista-updated">Uppdaterad {{ now.Format "2006-01-02 15:04" }}</p>
-    {{- else }}
-    <p class="topplista-empty">Topplistan är tom ännu. Spela en rankad match för att ta plats!</p>
-    {{- end }}
+    <div
+      id="topplista"
+      data-endpoint="https://openfrontio.fly.dev/api/leaderboard/ranked">
+      {{- $entries := hugo.Data.leaderboard }}
+      {{- if $entries }}
+      <table class="topplista-table">
+        <thead>
+          <tr>
+            <th scope="col">Placering</th>
+            <th scope="col">Spelare</th>
+            <th scope="col">ELO</th>
+            <th scope="col">Matcher</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{- range $entries }}
+          <tr{{ if le (int .rank) 3 }} class="topplista-top"{{ end }}>
+            <td>{{ .rank }}</td>
+            <td>{{ .accountUsername }}</td>
+            <td>{{ .elo }}</td>
+            <td>{{ .total }}</td>
+          </tr>
+          {{- end }}
+        </tbody>
+      </table>
+      <p class="topplista-updated">
+        Uppdaterad {{ now.Format "2006-01-02 15:04" }}
+      </p>
+      {{- else }}
+      <p class="topplista-empty">
+        Topplistan är tom ännu. Spela en rankad match för att ta plats!
+      </p>
+      {{- end }}
+    </div>
   </div>
 </article>
+
+<script>
+  (() => {
+    const root = document.getElementById("topplista");
+    if (!root) return;
+
+    const endpoint = root.dataset.endpoint;
+    const labels = ["Placering", "Spelare", "ELO", "Matcher"];
+    const emptyText =
+      "Topplistan är tom ännu. Spela en rankad match för att ta plats!";
+    const formatTime = new Intl.DateTimeFormat("sv-SE", {
+      dateStyle: "short",
+      timeStyle: "short",
+    });
+
+    function render(entries) {
+      const updated = document.createElement("p");
+      updated.className = "topplista-updated";
+      updated.textContent = `Uppdaterad ${formatTime.format(new Date())}`;
+
+      if (!Array.isArray(entries) || entries.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "topplista-empty";
+        empty.textContent = emptyText;
+        root.replaceChildren(empty, updated);
+        return;
+      }
+
+      const table = document.createElement("table");
+      table.className = "topplista-table";
+
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      for (const label of labels) {
+        const th = document.createElement("th");
+        th.scope = "col";
+        th.textContent = label;
+        headRow.append(th);
+      }
+      thead.append(headRow);
+
+      const tbody = document.createElement("tbody");
+      for (const entry of entries) {
+        const row = document.createElement("tr");
+        if (Number(entry.rank) <= 3) row.className = "topplista-top";
+        const cells = [
+          entry.rank,
+          entry.accountUsername,
+          entry.elo,
+          entry.total,
+        ];
+        for (const value of cells) {
+          const td = document.createElement("td");
+          td.textContent = value ?? "";
+          row.append(td);
+        }
+        tbody.append(row);
+      }
+
+      table.append(thead, tbody);
+      root.replaceChildren(table, updated);
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch(endpoint, {
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) return;
+        render(await res.json());
+        root.dataset.live = "true";
+      } catch {
+        // Keep the build-time snapshot when the API is unreachable.
+      }
+    }
+
+    refresh();
+    setInterval(() => {
+      if (!document.hidden) refresh();
+    }, 60_000);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refresh();
+    });
+  })();
+</script>
 
 {{- end }}{{/* end main */}}
