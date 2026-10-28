@@ -4,6 +4,9 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    # Refresh the ranked leaderboard snapshot every 15 minutes.
+    - cron: "*/15 * * * *"
 permissions:
   contents: read
   pages: write
@@ -111,6 +114,21 @@ jobs:
           path: ${{ runner.temp }}/.cache/hugo
           key: hugo-${{ github.run_id }}
           restore-keys: hugo-
+
+      - name: Fetch ranked leaderboard
+        run: |
+          url="https://openfrontio.fly.dev/api/leaderboard/ranked"
+          mkdir -p data
+          tmp="$(mktemp)"
+          if curl -fsSL --retry 3 --retry-delay 5 --max-time 30 "$url" -o "$tmp" \
+             && jq -e 'type == "array"' "$tmp" > /dev/null; then
+            mv "$tmp" data/leaderboard.json
+            echo "Fetched $(jq 'length' data/leaderboard.json) ranked entries."
+          else
+            rm -f "$tmp"
+            echo "Leaderboard fetch failed; keeping the committed snapshot."
+            [ -f data/leaderboard.json ] || echo '[]' > data/leaderboard.json
+          fi
 
       - name: Build
         run: |

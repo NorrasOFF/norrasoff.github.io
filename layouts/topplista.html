@@ -1,0 +1,43 @@
+{{- define "main" }}
+
+<header class="page-header">
+  <h1>{{ .Title }}</h1>
+  {{- with .Description }}
+  <div class="post-description">{{ . | markdownify }}</div>
+  {{- end }}
+</header>
+
+<article class="post-single">
+  <div class="post-content md-content">
+    {{ .Content }}
+
+    {{- $entries := hugo.Data.leaderboard }}
+    {{- if $entries }}
+    <table class="topplista-table">
+      <thead>
+        <tr>
+          <th scope="col">Placering</th>
+          <th scope="col">Spelare</th>
+          <th scope="col">ELO</th>
+          <th scope="col">Matcher</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{- range $entries }}
+        <tr{{ if le (int .rank) 3 }} class="topplista-top"{{ end }}>
+          <td>{{ .rank }}</td>
+          <td>{{ .accountUsername }}</td>
+          <td>{{ .elo }}</td>
+          <td>{{ .total }}</td>
+        </tr>
+        {{- end }}
+      </tbody>
+    </table>
+    <p class="topplista-updated">Uppdaterad {{ now.Format "2006-01-02 15:04" }}</p>
+    {{- else }}
+    <p class="topplista-empty">Topplistan är tom ännu. Spela en rankad match för att ta plats!</p>
+    {{- end }}
+  </div>
+</article>
+
+{{- end }}{{/* end main */}}

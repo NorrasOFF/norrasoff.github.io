@@ -18,6 +18,8 @@ params:
         url: https://docs.google.com/forms/d/e/1FAIpQLSd3qK-7uPH4xH4pIgHwzygtOSS7MwIyn695y94v72e0r0OHOA/viewform
       - name: Arkiv
         url: /archive/
+      - name: Topplista
+        url: /topplista/
 
   socialIcons:
     - name: instagram
@@ -31,3 +33,7 @@ menu:
       name: Arkiv
       url: /archive/
       weight: 10
+    - identifier: topplista
+      name: Topplista
+      url: /topplista/
+      weight: 11
