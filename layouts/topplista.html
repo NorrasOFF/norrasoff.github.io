@@ -63,7 +63,7 @@
     const updated = root.querySelector(".topplista-updated");
     const button = root.querySelector(".topplista-refresh");
     const endpoint = root.dataset.endpoint;
-    const labels = ["Placering", "Spelare", "Matcher"];
+    const labels = ["Placering", "Spelare"];
     const emptyText =
       "Topplistan är tom ännu. Spela en rankad match för att ta plats!";
     const formatTime = new Intl.DateTimeFormat("sv-SE", {
@@ -100,7 +100,6 @@
         const cells = [
           entry.rank,
           entry.accountUsername,
-          entry.total,
         ];
         for (const value of cells) {
           const td = document.createElement("td");
