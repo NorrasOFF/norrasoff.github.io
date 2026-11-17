@@ -22,7 +22,6 @@
             <tr>
               <th scope="col">Placering</th>
               <th scope="col">Spelare</th>
-              <th scope="col">ELO</th>
               <th scope="col">Matcher</th>
             </tr>
           </thead>
@@ -31,7 +30,6 @@
             <tr{{ if le (int .rank) 3 }} class="topplista-top"{{ end }}>
               <td>{{ .rank }}</td>
               <td>{{ .accountUsername }}</td>
-              <td>{{ .elo }}</td>
               <td>{{ .total }}</td>
             </tr>
             {{- end }}
@@ -65,7 +63,7 @@
     const updated = root.querySelector(".topplista-updated");
     const button = root.querySelector(".topplista-refresh");
     const endpoint = root.dataset.endpoint;
-    const labels = ["Placering", "Spelare", "ELO", "Matcher"];
+    const labels = ["Placering", "Spelare", "Matcher"];
     const emptyText =
       "Topplistan är tom ännu. Spela en rankad match för att ta plats!";
     const formatTime = new Intl.DateTimeFormat("sv-SE", {
@@ -102,7 +100,6 @@
         const cells = [
           entry.rank,
           entry.accountUsername,
-          entry.elo,
           entry.total,
         ];
         for (const value of cells) {
